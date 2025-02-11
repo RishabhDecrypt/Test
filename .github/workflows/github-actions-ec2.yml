@@ -1,0 +1,57 @@
+name: Push-to-EC2 instance
+
+# Trigger deployment only on push to main branch 
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Push to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v1
+
+      - name: Deploy to my EC2 instance
+        uses: easingthemes/ssh-deploy@v2.1.5
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          SOURCE: "./"
+          REMOTE_HOST: ${{ secrets.HOST_DNS }}
+          REMOTE_USER: ${{ secrets.USERNAME }}
+          TARGET: ${{ secrets.TARGET_DIR }}
+
+      - name: Executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Update and install required packages
+            sudo yum -y update
+            sudo yum install -y httpd curl
+            
+            # Install Node.js 18
+            curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+            sudo yum install -y nodejs
+            
+            # Install PM2 process manager globally
+            sudo npm install -g pm2
+            
+            # Navigate to the deployment directory
+            cd ${{ secrets.TARGET_DIR }}
+            
+            # Install dependencies
+            npm install
+            
+            # Run the app with PM2
+            pm2 stop all || true
+            pm2 start index.js --name "my-backend-app"
+            
+            # Save PM2 process list and set it to start on reboot
+            pm2 save
+            pm2 startup
