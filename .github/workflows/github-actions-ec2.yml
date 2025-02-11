@@ -21,7 +21,7 @@ jobs:
       - name: Test SSH connectivity
         run: |
           echo "Testing SSH connection to EC2"
-          ssh -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key ec2-user@${{ secrets.HOST_DNS }} "echo 'SSH connection successful'"
+          ssh -o StrictHostKeyChecking=no -i /home/rishab/Desktop/AWS-COURSE.ssh/deploy_key ec2-user@${{ secrets.HOST_DNS }} "echo 'SSH connection successful'"
 
       - name: Deploy to EC2 instance using SSH Deploy
         uses: easingthemes/ssh-deploy@v2.1.5
