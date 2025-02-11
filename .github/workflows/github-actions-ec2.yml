@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3  # Updated to the latest stable version
 
       - name: Deploy to my EC2 instance
         uses: easingthemes/ssh-deploy@v2.1.5
@@ -54,4 +54,4 @@ jobs:
             
             # Save PM2 process list and set it to start on reboot
             pm2 save
-            pm2 startup
+            sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u ec2-user --hp /home/ec2-user
