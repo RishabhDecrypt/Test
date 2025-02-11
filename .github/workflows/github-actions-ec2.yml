@@ -50,7 +50,7 @@ jobs:
             
             # Run the app with PM2
             pm2 stop all || true
-            pm2 start index.js --name "my-backend-app"
+            pm2 start index.js --name "HELLO-WORLD"
             
             # Save PM2 process list and set it to start on reboot
             pm2 save
