@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3  # Updated to the latest stable version
+        uses: actions/checkout@v1
 
       - name: Deploy to my EC2 instance
         uses: easingthemes/ssh-deploy@v2.1.5
@@ -31,7 +31,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Update and install required packages
+            # Update and install required packages for Amazon Linux
             sudo yum -y update
             sudo yum install -y httpd curl
             
@@ -54,4 +54,4 @@ jobs:
             
             # Save PM2 process list and set it to start on reboot
             pm2 save
-            sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u ec2-user --hp /home/ec2-user
+            pm2 startup
