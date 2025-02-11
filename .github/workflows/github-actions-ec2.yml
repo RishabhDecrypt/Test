@@ -21,6 +21,7 @@ jobs:
       - name: Test SSH connectivity
         run: |
           echo "Testing SSH connection to EC2"
+          mkdir -p /home/runner/.ssh # Ensure the .ssh directory exists
           echo "${{ secrets.EC2_SSH_KEY }}" > /home/runner/.ssh/deploy_key
           chmod 600 /home/runner/.ssh/deploy_key
           ssh -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key ec2-user@${{ secrets.HOST_DNS }} "echo 'SSH connection successful'"
@@ -38,6 +39,7 @@ jobs:
       - name: Executing remote ssh commands using ssh key
         run: |
             echo "Executing remote commands on EC2 instance"
+            mkdir -p /home/runner/.ssh # Ensure the .ssh directory exists
             echo "${{ secrets.EC2_SSH_KEY }}" > /home/runner/.ssh/deploy_key
             chmod 600 /home/runner/.ssh/deploy_key
             ssh -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key ec2-user@${{ secrets.HOST_DNS }} << 'EOF'
