@@ -11,11 +11,19 @@ jobs:
     name: Push to EC2
     runs-on: ubuntu-latest
 
+    env:
+      ACTIONS_STEP_DEBUG: true # Enable debug logs for troubleshooting
+
     steps:
       - name: Checkout the code
         uses: actions/checkout@v1
 
-      - name: Deploy to my EC2 instance
+      - name: Test SSH connectivity
+        run: |
+          echo "Testing SSH connection to EC2"
+          ssh -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key ec2-user@${{ secrets.HOST_DNS }} "echo 'SSH connection successful'"
+
+      - name: Deploy to EC2 instance using SSH Deploy
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
@@ -26,13 +34,10 @@ jobs:
           REMOTE_PORT: 22
 
       - name: Executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST_DNS }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            # Update and install required packages for Amazon Linux
+        run: |
+            echo "Executing remote commands on EC2 instance"
+            ssh -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key ec2-user@${{ secrets.HOST_DNS }} << 'EOF'
+            # Update and install required packages
             sudo yum -y update
             sudo yum install -y httpd curl
             
@@ -56,3 +61,4 @@ jobs:
             # Save PM2 process list and set it to start on reboot
             pm2 save
             pm2 startup
+            EOF
