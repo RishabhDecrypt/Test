@@ -20,7 +20,7 @@ jobs:
 
       - name: Test SSH connectivity
         run: |
-          echo "Testing SSH connection to EC2"
+          echo "Testingg SSH connection to EC2"
           mkdir -p /home/runner/.ssh # Ensure the .ssh directory exists
           echo "${{ secrets.EC2_SSH_KEY }}" > /home/runner/.ssh/deploy_key
           chmod 600 /home/runner/.ssh/deploy_key
