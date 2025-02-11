@@ -1,74 +1,3 @@
-# name: Push-to-EC2 instance
-
-# # Trigger deployment only on push to main branch 
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   deploy:
-#     name: Push to EC2
-#     runs-on: ubuntu-latest
-
-#     env:
-#       ACTIONS_STEP_DEBUG: true # Enable debug logs for troubleshooting
-
-#     steps:
-#       - name: Checkout the code
-#         uses: actions/checkout@v1
-
-#       - name: Test SSH connectivity
-#         run: |
-#           echo "Testingg SSH connection to EC2"
-#           mkdir -p /home/runner/.ssh # Ensure the .ssh directory exists
-#           echo "${{ secrets.EC2_SSH_KEY }}" > /home/runner/.ssh/deploy_key
-#           chmod 600 /home/runner/.ssh/deploy_key
-#           ssh -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key ec2-user@${{ secrets.HOST_DNS }} "echo 'SSH connection successful'"
-
-#       - name: Deploy to EC2 instance using SSH Deploy
-#         uses: easingthemes/ssh-deploy@v2.1.5
-#         env:
-#           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-#           SOURCE: "./"
-#           REMOTE_HOST: ${{ secrets.HOST_DNS }}
-#           REMOTE_USER: ${{ secrets.USERNAME }}
-#           TARGET: ${{ secrets.TARGET_DIR }} 
-#           REMOTE_PORT: 22
-
-#       - name: Executing remote ssh commands using ssh key
-#         run: |
-#             echo "Executing remote commands on EC2 instance"
-#             mkdir -p /home/runner/.ssh # Ensure the .ssh directory exists
-#             echo "${{ secrets.EC2_SSH_KEY }}" > /home/runner/.ssh/deploy_key
-#             chmod 600 /home/runner/.ssh/deploy_key
-#             ssh -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key ec2-user@${{ secrets.HOST_DNS }} << 'EOF'
-#             # Update and install required packages
-#             sudo yum -y update
-#             sudo yum install -y httpd curl
-            
-#             # Install Node.js 18
-#             curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
-#             sudo yum install -y nodejs
-            
-#             # Install PM2 process manager globally
-#             sudo npm install -g pm2
-            
-#             # Navigate to the deployment directory
-#             cd ${{ secrets.TARGET_DIR }}
-            
-#             # Install dependencies
-#             npm install
-            
-#             # Run the app with PM2
-#             pm2 stop all || true
-#             pm2 start index.js --name "HELLO-WORLD"
-            
-#             # Save PM2 process list and set it to start on reboot
-#             pm2 save
-#             pm2 startup
-#             EOF
-
 name: Deploy Backend
 
 on:
@@ -90,11 +19,11 @@ jobs:
 
       - name: Test SSH connectivity
         run: |
-          echo "Testingg SSH connection to EC2"
-          mkdir -p /home/runner/.ssh  # Ensure the .ssh directory exists
-          echo "${{ secrets.EC2_SSH_KEY }}" > /home/runner/.ssh/deploy_key
-          chmod 600 /home/runner/.ssh/deploy_key
-          ssh -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key ec2-user@${{ secrets.HOST_DNS }} "echo 'SSH connection successful'"
+          echo "Testing SSH connection to EC2"
+          mkdir -p ~/.ssh  # Ensure the .ssh directory exists in the correct path
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ec2-user@${{ secrets.HOST_DNS }} "echo 'SSH connection successful'"
 
       - name: Deploy to EC2 instance using SSH Deploy
         uses: easingthemes/ssh-deploy@v2.1.5
@@ -109,10 +38,10 @@ jobs:
       - name: Executing remote ssh commands using ssh key
         run: |
             echo "Executing remote commands on EC2 instance"
-            mkdir -p /home/runner/.ssh  # Ensure the .ssh directory exists
-            echo "${{ secrets.EC2_SSH_KEY }}" > /home/runner/.ssh/deploy_key
-            chmod 600 /home/runner/.ssh/deploy_key
-            ssh -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key ec2-user@${{ secrets.HOST_DNS }} << 'EOF'
+            mkdir -p ~/.ssh  # Ensure the .ssh directory exists in the correct path
+            echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key
+            chmod 600 ~/.ssh/deploy_key
+            ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ec2-user@${{ secrets.HOST_DNS }} << 'EOF'
             # Update and install required packages
             sudo yum -y update
             sudo yum install -y httpd curl
