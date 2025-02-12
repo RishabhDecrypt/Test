@@ -14,16 +14,16 @@ jobs:
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST_DNS }}
-          username: ${{ secrets.DEV_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.DEV_PORT }}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
           script: |
-            cd /var/www/html/Ostra-Backend
+            cd /var/www/html/Test
             git config --global --add safe.directory /var/www/html/Test
             sudo git add .
             sudo git commit -m "serversidechanges"
-            sudo git pull origin main --rebase
+            sudo git pull origin main
             sudo npm i
             pm2 ls
-            sudo pm2 restart 0
+            pm2 restart 0
