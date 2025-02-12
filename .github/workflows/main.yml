@@ -1,0 +1,29 @@
+name: deploy backend
+
+on:
+  push:
+    branches:
+      - main
+ 
+jobs:
+
+ 
+  build-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.DEV_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.DEV_PORT }}
+          script: |
+            cd /var/www/html/Ostra-Backend
+            git config --global --add safe.directory /var/www/html/Test
+            sudo git add .
+            sudo git commit -m "serversidechanges"
+            sudo git pull origin main --rebase
+            sudo npm i
+            pm2 ls
+            sudo pm2 restart 0
